@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CAT Pecahan — Drill Penyederhanaan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+    /* ─── DESIGN TOKENS — LUXURY DARK RED & BLACK ───────────── */
+    :root {
+        /* Luxury Color System */
+        --bg-base:      #080810;
+        --bg-surface:   #10101c;
+        --bg-elevated:  #191926;
+        --bg-card:      #13131f;
+
+        --primary:      #dc1430;
+        --primary-light:#ff2442;
+        --primary-dark: #a50f22;
+        --gold:         #c9a227;
+        --gold-light:   #e8c050;
+
+        --success:      #22c55e;
+        --error:        #ff3333;
+        --warning:      #f59e0b;
+
+        --text-primary: #f0ebe8;
+        --text-secondary: #8a8a9a;
+        --text-muted:   #55556a;
+
+        --border:        rgba(220, 20, 48, 0.18);
+        --border-bright: rgba(220, 20, 48, 0.55);
+        --border-subtle: rgba(255, 255, 255, 0.06);
+
+        --glow-red:      0 0 0 3px rgba(220, 20, 48, 0.28), 0 0 24px rgba(220, 20, 48, 0.14);
+        --glow-gold:     0 0 0 2px rgba(201, 162, 39, 0.3), 0 0 20px rgba(201, 162, 39, 0.12);
+
+        /* Spacing Scale (8pt system) */
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-5: 1.25rem;
+        --space-6: 1.5rem;
+        --space-8: 2rem;
+        --space-10: 2.5rem;
+        --space-12: 3rem;
+
+        /* Touch Targets */
+        --touch-min: 44px;
+        --touch-spacing: 8px;
+
+        /* Border Radius */
+        --radius-sm: 0.5rem;
+        --radius-md: 0.75rem;
+        --radius-lg: 1rem;
+        --radius-xl: 1.5rem;
+
+        /* Shadows — dark theme */
+        --shadow-sm: 0 1px 4px rgba(0,0,0,0.5);
+        --shadow-md: 0 4px 16px rgba(0,0,0,0.6);
+        --shadow-lg: 0 8px 32px rgba(0,0,0,0.7), 0 0 0 1px rgba(220,20,48,0.08);
+        --shadow-card: 0 2px 20px rgba(0,0,0,0.8), 0 0 0 1px var(--border);
+
+        /* Animation */
+        --duration-fast: 150ms;
+        --duration-base: 200ms;
+        --duration-slow: 300ms;
+        --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+        /* Typography Scale */
+        --text-xs:   0.75rem;
+        --text-sm:   0.875rem;
+        --text-base: 1rem;
+        --text-lg:   1.125rem;
+        --text-xl:   1.25rem;
+        --text-2xl:  1.5rem;
+        --text-3xl:  1.875rem;
+        --text-4xl:  2.25rem;
+
+        --leading-tight:   1.25;
+        --leading-normal:  1.5;
+        --leading-relaxed: 1.75;
+    }
+
+    /* ─── RESET & BASE ──────────────────────────────────────── */
+    *, *::before, *::after {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-user-select: none;
+        user-select: none;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    input {
+        -webkit-user-select: text !important;
+        user-select: text !important;
+    }
+
+    html {
+        height: 100%;
+        overflow: hidden;
+        font-size: 16px;
+    }
+
+    body {
+        height: 100dvh;
+        width: 100%;
+        overflow: hidden;
+        overscroll-behavior: none;
+        touch-action: pan-y;
+        background: var(--bg-base);
+        background-image:
+            radial-gradient(ellipse 80% 60% at 50% -10%, rgba(180, 10, 30, 0.12) 0%, transparent 60%),
+            radial-gradient(ellipse 60% 40% at 80% 100%, rgba(100, 0, 20, 0.08) 0%, transparent 60%);
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--text-primary);
+        line-height: var(--leading-normal);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg-base); }
+    ::-webkit-scrollbar-thumb { background: var(--primary-dark); border-radius: 4px; }
+
+    .mono {
+        font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* ─── APP SHELL ─────────────────────────────────────────── */
+    #app {
+        height: 100%;
+        width: 100%;
+        background: transparent;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    /* ─── FADE IN ───────────────────────────────────────────── */
+    .fade-in {
+        animation: fadeIn var(--duration-base) var(--ease-out) both;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── PULSE GLOW (active answer box) ───────────────────── */
+    @keyframes pulseGlow {
+        0%, 100% { box-shadow: var(--glow-red); }
+        50%       { box-shadow: 0 0 0 4px rgba(220,20,48,0.4), 0 0 32px rgba(220,20,48,0.2); }
+    }
+
+    /* ─── QUESTION CARD ─────────────────────────────────────── */
+    .question-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-xl);
+        border: 1.5px solid var(--border);
+        padding: var(--space-6);
+        box-shadow: var(--shadow-card);
+        width: 100%;
+        max-width: 480px;
+        margin: 0 auto;
+        box-sizing: border-box;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Top red line accent */
+    .question-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--primary), var(--primary-light), var(--primary), transparent);
+    }
+
+    @media (max-width: 640px) {
+        .question-card {
+            padding: 0.625rem 0.75rem;
+            margin: 0;
+            max-width: 100%;
+            border-radius: var(--radius-lg);
+        }
+    }
+
+    .fraction-display {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-3);
+        margin: var(--space-6) 0;
+        flex-wrap: wrap;
+    }
+
+    .fraction-num {
+        font-size: var(--text-4xl);
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--text-primary);
+        font-variant-numeric: tabular-nums;
+        text-shadow: 0 0 20px rgba(240,235,232,0.15);
+    }
+
+    .fraction-slash {
+        font-size: var(--text-4xl);
+        font-weight: 300;
+        color: var(--primary);
+        text-shadow: 0 0 12px rgba(220,20,48,0.5);
+    }
+
+    @media (max-width: 640px) {
+        .fraction-num   { font-size: var(--text-2xl); }
+        .fraction-slash { font-size: var(--text-2xl); }
+        .fraction-display { margin: 0.5rem 0; }
+        .arrow-down { margin: 0.2rem 0; font-size: var(--text-base); }
+        .question-label { margin-bottom: 0; }
+        .question-label span { padding: 3px 10px; font-size: 10px; }
+    }
+
+    .answer-display {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-4);
+        margin: var(--space-8) 0;
+        flex-wrap: wrap;
+    }
+
+    .answer-box {
+        min-width: 88px;
+        min-height: 88px;
+        border: 2px solid var(--primary);
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--text-3xl);
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--text-primary);
+        background: var(--bg-elevated);
+        transition: all var(--duration-fast) var(--ease-out);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .answer-box.active {
+        border-color: var(--primary-light);
+        background: rgba(220, 20, 48, 0.08);
+        animation: pulseGlow 2s ease-in-out infinite;
+        transform: scale(1.02);
+        color: #fff;
+    }
+
+    .answer-box.error {
+        border-color: var(--error);
+        background: rgba(255, 51, 51, 0.12);
+        animation: shake var(--duration-slow);
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25%       { transform: translateX(-6px); }
+        75%       { transform: translateX(6px); }
+    }
+
+    .answer-separator {
+        font-size: var(--text-4xl);
+        font-weight: 300;
+        color: var(--primary);
+        text-shadow: 0 0 8px rgba(220,20,48,0.4);
+    }
+
+    @media (max-width: 640px) {
+        .answer-display { margin: 0.5rem 0; }
+        .answer-box {
+            min-width: 60px;
+            min-height: 60px;
+            font-size: var(--text-xl);
+        }
+        .answer-separator { font-size: var(--text-2xl); }
+    }
+
+    /* ─── DUAL NUMPAD ───────────────────────────────────────── */
+    .dual-numpad-container {
+        display: flex;
+        gap: var(--space-4);
+        justify-content: center;
+        margin-top: var(--space-8);
+        width: 100%;
+    }
+
+    @media (max-width: 640px) {
+        .dual-numpad-container {
+            gap: var(--space-2);
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+    }
+
+    .numpad-section {
+        flex: 1;
+        max-width: 200px;
+        min-width: 0;
+    }
+
+    @media (max-width: 640px) {
+        .numpad-section { max-width: 160px; }
+    }
+
+    .numpad-label {
+        text-align: center;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: var(--space-3);
+        opacity: 0.8;
+    }
+
+    .numpad-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--touch-spacing);
+    }
+
+    .numpad-btn {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+        cursor: pointer;
+        min-height: var(--touch-min);
+        aspect-ratio: 1;
+        border: 1.5px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        background: var(--bg-elevated);
+        font-size: var(--text-xl);
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--text-primary);
+        transition: all var(--duration-fast) var(--ease-out);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+        -webkit-user-select: none;
+        will-change: transform;
+    }
+
+    .numpad-btn:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+        border-color: var(--primary);
+    }
+
+    .numpad-btn:active,
+    .numpad-btn.pressed {
+        transform: scale(0.93);
+        background: var(--bg-surface);
+        border-color: var(--primary);
+        color: var(--primary-light);
+        box-shadow: 0 0 10px rgba(220,20,48,0.2);
+    }
+
+    .numpad-btn.del {
+        background: rgba(220, 20, 48, 0.08);
+        color: var(--primary);
+        border-color: rgba(220, 20, 48, 0.25);
+        font-weight: 600;
+    }
+
+    .numpad-btn.del:active,
+    .numpad-btn.del.pressed {
+        background: rgba(220, 20, 48, 0.18);
+        border-color: var(--primary);
+    }
+
+    @media (max-width: 640px) {
+        .numpad-btn {
+            min-height: 38px;
+            font-size: var(--text-base);
+            border-radius: var(--radius-sm);
+        }
+        .numpad-grid { gap: 5px; }
+        .numpad-label { margin-bottom: var(--space-2); font-size: 10px; }
+        .numpad-section { max-width: none; flex: 1; }
+    }
+
+    /* ─── STATS BAR ─────────────────────────────────────────── */
+    .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-2);
+        padding: var(--space-4);
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border);
+        position: relative;
+    }
+
+    .stats-bar::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        opacity: 0.5;
+    }
+
+    @media (max-width: 640px) {
+        .stats-bar {
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-1);
+            padding: var(--space-2) var(--space-3);
+        }
+        .stat-value { font-size: var(--text-lg); }
+        .stat-label { font-size: 9px; }
+        .stat-item  { padding: var(--space-1); }
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: var(--space-2);
+    }
+
+    .stat-value {
+        font-size: var(--text-2xl);
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--text-primary);
+        line-height: var(--leading-tight);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .stat-label {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-top: var(--space-1);
+        line-height: var(--leading-tight);
+    }
+
+    @media (max-width: 640px) {
+        .stat-value { font-size: var(--text-xl); }
+    }
+
+    /* ─── TIER BANNER ───────────────────────────────────────── */
+    .tier-banner {
+        display: flex;
+        align-items: center;
+        gap: var(--space-5);
+        padding: var(--space-6);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--space-6);
+        box-shadow: var(--shadow-md);
+        border: 1px solid rgba(255,255,255,0.08);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .tier-banner::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    }
+
+    @media (max-width: 640px) {
+        .tier-banner {
+            gap: var(--space-4);
+            padding: var(--space-4);
+        }
+    }
+
+    .tier-rank {
+        font-size: var(--text-4xl);
+        font-weight: 900;
+        font-family: 'JetBrains Mono', monospace;
+        line-height: 1;
+    }
+
+    @media (max-width: 640px) {
+        .tier-rank { font-size: var(--text-3xl); }
+    }
+
+    /* ─── REVIEW ────────────────────────────────────────────── */
+    .review-item {
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        padding: var(--space-4);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--space-3);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-3);
+    }
+
+    .review-fraction {
+        display: flex;
+        align-items: center;
+        gap: var(--space-5);
+        flex: 1;
+        min-width: 0;
+    }
+
+    @media (max-width: 640px) {
+        .review-fraction {
+            gap: var(--space-3);
+            flex-wrap: wrap;
+        }
+    }
+
+    .review-frac-display {
+        display: flex;
+        align-items: center;
+        gap: var(--space-1);
+    }
+
+    .review-num {
+        font-size: var(--text-xl);
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--text-primary);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .review-slash {
+        font-size: var(--text-xl);
+        font-weight: 300;
+        color: var(--primary);
+    }
+
+    @media (max-width: 640px) {
+        .review-num  { font-size: var(--text-lg); }
+        .review-slash { font-size: var(--text-lg); }
+    }
+
+    /* ─── BUTTONS ───────────────────────────────────────────── */
+    .btn-primary {
+        min-height: var(--touch-min);
+        background: var(--primary);
+        color: #fff;
+        padding: var(--space-3) var(--space-6);
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: var(--text-base);
+        border: none;
+        cursor: pointer;
+        transition: all var(--duration-fast) var(--ease-out);
+        box-shadow: 0 4px 14px rgba(220,20,48,0.35);
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        letter-spacing: 0.02em;
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-light);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(220,20,48,0.45);
+    }
+
+    .btn-primary:active {
+        transform: scale(0.97);
+        background: var(--primary-dark);
+    }
+
+    .btn-primary:focus-visible {
+        outline: 2px solid var(--primary-light);
+        outline-offset: 3px;
+    }
+
+    .btn-secondary {
+        min-height: var(--touch-min);
+        background: var(--bg-elevated);
+        color: var(--text-primary);
+        padding: var(--space-3) var(--space-6);
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: var(--text-base);
+        border: 1.5px solid var(--border-subtle);
+        cursor: pointer;
+        transition: all var(--duration-fast) var(--ease-out);
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+    }
+
+    .btn-secondary:hover {
+        background: var(--bg-surface);
+        border-color: var(--border);
+    }
+
+    .btn-secondary:active {
+        transform: scale(0.97);
+    }
+
+    .btn-secondary:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 3px;
+    }
+
+    @media (max-width: 640px) {
+        .btn-primary,
+        .btn-secondary {
+            width: 100%;
+            max-width: 100%;
+        }
+    }
+
+    /* ─── SAFE AREA PADDING ─────────────────────────────────── */
+    @supports (padding: env(safe-area-inset-bottom)) {
+        body { padding-bottom: env(safe-area-inset-bottom); }
+        .stats-bar { padding-top: max(var(--space-4), env(safe-area-inset-top)); }
+    }
+
+    /* ─── UTILITY ───────────────────────────────────────────── */
+    .hidden { display: none !important; }
+    .text-success { color: var(--success); }
+    .text-error   { color: var(--error); }
+    .text-warning { color: var(--warning); }
+    .text-gold    { color: var(--gold); }
+
+    /* ─── DASHBOARD HEADER ──────────────────────────────────── */
+    .dashboard-header {
+        padding: var(--space-6) var(--space-6) var(--space-4);
+        text-align: center;
+        background: var(--bg-surface);
+        border-bottom: 1px solid var(--border);
+        position: relative;
+    }
+
+    .dashboard-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        opacity: 0.6;
+    }
+
+    .dashboard-title {
+        font-size: var(--text-3xl);
+        font-weight: 900;
+        color: var(--text-primary);
+        margin-bottom: var(--space-1);
+        letter-spacing: -0.01em;
+    }
+
+    .dashboard-title span {
+        color: var(--primary);
+        text-shadow: 0 0 20px rgba(220,20,48,0.4);
+    }
+
+    .dashboard-subtitle {
+        color: var(--text-muted);
+        font-size: var(--text-sm);
+        letter-spacing: 0.04em;
+    }
+
+    /* ─── PACKAGE CARD ──────────────────────────────────────── */
+    .pkg-card {
+        background: var(--bg-card);
+        border: 1.5px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        padding: var(--space-4);
+        text-align: center;
+        cursor: pointer;
+        transition: all var(--duration-base) var(--ease-out);
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pkg-card:hover {
+        border-color: var(--border-bright);
+        box-shadow: var(--glow-red);
+        transform: translateY(-3px);
+        background: var(--bg-elevated);
+    }
+
+    .pkg-card:active {
+        transform: scale(0.97) translateY(0);
+    }
+
+    .pkg-card.completed {
+        border-color: rgba(34, 197, 94, 0.3);
+        background: rgba(34, 197, 94, 0.04);
+    }
+
+    .pkg-card.completed:hover {
+        border-color: rgba(34, 197, 94, 0.6);
+        box-shadow: 0 0 0 3px rgba(34,197,94,0.15), 0 0 24px rgba(34,197,94,0.1);
+    }
+
+    .pkg-number {
+        font-size: var(--text-2xl);
+        font-weight: 900;
+        color: var(--text-primary);
+    }
+
+    .pkg-label {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-top: var(--space-1);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .pkg-count {
+        font-size: var(--text-xs);
+        color: var(--text-muted);
+        margin-top: 2px;
+        opacity: 0.6;
+    }
+
+    .pkg-score {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        color: var(--success);
+        margin-top: var(--space-2);
+    }
+
+    .pkg-tier-badge {
+        display: inline-block;
+        font-size: var(--text-xs);
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 6px;
+        margin-top: 4px;
+    }
+
+    /* ─── INFO BOX ──────────────────────────────────────────── */
+    .info-box {
+        background: var(--bg-surface);
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: var(--space-4);
+        max-width: 800px;
+        margin: var(--space-6) auto 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .info-box::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 3px;
+        background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
+    }
+
+    .info-box-title {
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--space-2);
+        font-size: var(--text-sm);
+        padding-left: var(--space-3);
+    }
+
+    .info-box ul {
+        color: var(--text-secondary);
+        font-size: var(--text-sm);
+        line-height: var(--leading-relaxed);
+        margin: 0;
+        padding-left: calc(var(--space-5) + var(--space-3));
+    }
+
+    .info-box ul strong {
+        color: var(--text-primary);
+    }
+
+    /* ─── REVIEW STATS CARD ─────────────────────────────────── */
+    .review-stat-card {
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        padding: var(--space-6);
+        border: 1.5px solid var(--border-subtle);
+        text-align: center;
+        box-shadow: var(--shadow-card);
+    }
+
+    /* ─── QUESTION LABEL ────────────────────────────────────── */
+    .question-label {
+        text-align: center;
+        margin-bottom: var(--space-4);
+    }
+
+    .question-label span {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border: 1px solid var(--border);
+        padding: 4px 12px;
+        border-radius: 20px;
+        background: rgba(220,20,48,0.06);
+        color: var(--primary);
+    }
+
+    /* ─── ARROW ─────────────────────────────────────────────── */
+    .arrow-down {
+        text-align: center;
+        margin: var(--space-4) 0;
+        font-size: var(--text-2xl);
+        color: var(--primary);
+        opacity: 0.7;
+        text-shadow: 0 0 10px rgba(220,20,48,0.4);
+    }
+
+    /* ─── REVIEW HEADER ─────────────────────────────────────── */
+    .review-view-bg {
+        background: var(--bg-base);
+        background-image:
+            radial-gradient(ellipse 80% 40% at 50% 0%, rgba(180,10,30,0.1) 0%, transparent 60%);
+    }
+
+    /* ─── PEMBAHASAN ACCORDION ──────────────────────────────── */
+    .pb-section-wrap {
+        margin-top: var(--space-6);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+    .pb-acc-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--space-4) var(--space-5);
+        border-radius: var(--radius-lg);
+        border: 1.5px solid transparent;
+        cursor: pointer;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 700;
+        font-size: var(--text-sm);
+        transition: all var(--duration-fast) var(--ease-out);
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+        text-align: left;
+    }
+    .pb-acc-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .pb-acc-btn.salah  { background:rgba(220,20,48,0.1);  border-color:rgba(220,20,48,0.25);  color:#f87171; }
+    .pb-acc-btn.salah:hover  { background:rgba(220,20,48,0.16); border-color:var(--border-bright); }
+    .pb-acc-btn.belum  { background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.25); color:#fbbf24; }
+    .pb-acc-btn.belum:hover  { background:rgba(245,158,11,0.16); border-color:rgba(245,158,11,0.5); }
+    .pb-acc-btn.benar  { background:rgba(34,197,94,0.08); border-color:rgba(34,197,94,0.2);   color:#4ade80; }
+    .pb-acc-btn.benar:hover  { background:rgba(34,197,94,0.14); border-color:rgba(34,197,94,0.4); }
+    .pb-acc-left { display:flex; align-items:center; gap:var(--space-3); }
+    .pb-acc-icon { font-size:1.1rem; flex-shrink:0; }
+    .pb-acc-title { font-size:var(--text-sm); font-weight:700; }
+    .pb-acc-count { font-size:var(--text-xs); font-weight:600; opacity:.7; font-family:'JetBrains Mono',monospace; margin-left:var(--space-1); }
+    .pb-acc-chevron { font-size:var(--text-base); opacity:.7; transition:transform var(--duration-base) var(--ease-out); flex-shrink:0; }
+    .pb-acc-btn.open .pb-acc-chevron { transform:rotate(180deg); }
+    .pb-acc-body { display:none; border-radius:var(--radius-lg); overflow:hidden; border:1.5px solid var(--border-subtle); background:var(--bg-card); }
+    .pb-acc-body.open { display:block; }
+    .pb-item {
+        padding: var(--space-4);
+        border-bottom: 1px solid var(--border-subtle);
+        display: grid;
+        grid-template-columns: 24px auto 1fr;
+        gap: var(--space-3);
+        align-items: start;
+        transition: background var(--duration-fast);
+    }
+    .pb-item:last-child { border-bottom:none; }
+    .pb-item:hover { background:var(--bg-elevated); }
+    .pb-item-num { font-size:var(--text-xs); font-weight:700; color:var(--text-muted); font-family:'JetBrains Mono',monospace; text-align:center; padding-top:3px; }
+    .pb-item-frac { display:flex; align-items:center; gap:3px; flex-shrink:0; }
+    .pb-frac-num  { font-size:var(--text-lg); font-weight:800; font-family:'JetBrains Mono',monospace; color:var(--text-primary); font-variant-numeric:tabular-nums; line-height:1; }
+    .pb-frac-slash { font-size:var(--text-lg); font-weight:300; color:var(--primary); line-height:1; }
+    .pb-item-detail { min-width:0; }
+    .pb-item-answers { display:flex; align-items:center; gap:var(--space-2); flex-wrap:wrap; margin-bottom:var(--space-2); }
+    .pb-answer-chip { display:inline-flex; align-items:center; gap:4px; font-size:var(--text-xs); font-weight:600; padding:2px 8px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-variant-numeric:tabular-nums; }
+    .pb-answer-chip.wrong      { background:rgba(220,20,48,0.15); color:#f87171; }
+    .pb-answer-chip.right      { background:rgba(34,197,94,0.15);  color:#4ade80; }
+    .pb-answer-chip.key        { background:rgba(255,255,255,0.06); color:var(--text-secondary); }
+    .pb-answer-chip.unanswered { background:rgba(245,158,11,0.12); color:#fbbf24; }
+    .pb-step-line { font-size:var(--text-xs); color:var(--text-secondary); line-height:1.6; }
+    .pb-step-line .fpb   { color:var(--gold); font-weight:700; }
+    .pb-step-line .arrow { color:var(--primary); margin:0 3px; }
+    .pb-step-line .result { color:var(--success); font-weight:700; font-family:'JetBrains Mono',monospace; }
+    .pb-empty { padding:var(--space-6); text-align:center; color:var(--text-muted); font-size:var(--text-sm); }
+
+    /* DEAD CSS (kept for compatibility, no longer active) */
+    .pembahasan-toggle {
+        width: 100%;
+        background: var(--bg-surface);
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: var(--space-4) var(--space-5);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        color: var(--text-primary);
+        font-weight: 700;
+        font-size: var(--text-base);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        transition: all var(--duration-fast) var(--ease-out);
+        margin-top: var(--space-6);
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .pembahasan-toggle:hover {
+        border-color: var(--border-bright);
+        background: var(--bg-elevated);
+    }
+    .pembahasan-toggle .toggle-icon {
+        font-size: var(--text-lg);
+        color: var(--primary);
+        transition: transform var(--duration-base) var(--ease-out);
+    }
+    .pembahasan-toggle.open .toggle-icon {
+        transform: rotate(180deg);
+    }
+
+    .pembahasan-body {
+        display: none;
+        margin-top: var(--space-3);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        border: 1.5px solid var(--border-subtle);
+    }
+    .pembahasan-body.open { display: block; }
+
+    .pb-table-header {
+        display: grid;
+        grid-template-columns: 36px 1fr 80px 80px 1fr;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-4);
+        background: rgba(220,20,48,0.12);
+        border-bottom: 1px solid var(--border);
+        font-size: var(--text-xs);
+        font-weight: 700;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+    }
+
+    .pb-row {
+        display: grid;
+        grid-template-columns: 36px 1fr 80px 80px 1fr;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-4);
+        border-bottom: 1px solid var(--border-subtle);
+        align-items: center;
+        font-size: var(--text-sm);
+        transition: background var(--duration-fast);
+    }
+    .pb-row:last-child { border-bottom: none; }
+    .pb-row.correct { background: rgba(34,197,94,0.04); }
+    .pb-row.wrong   { background: rgba(220,20,48,0.06); }
+    .pb-row:hover   { background: var(--bg-elevated); }
+
+    .pb-num {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        color: var(--text-muted);
+        font-family: 'JetBrains Mono', monospace;
+        text-align: center;
+    }
+    .pb-fraction {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+        color: var(--text-primary);
+        font-variant-numeric: tabular-nums;
+    }
+    .pb-user {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+    }
+    .pb-user.correct { color: var(--success); }
+    .pb-user.wrong   { color: var(--error); }
+    .pb-answer {
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 800;
+        color: var(--success);
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+    }
+    .pb-step {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+        line-height: var(--leading-relaxed);
+    }
+    .pb-step .fpb { color: var(--gold); font-weight: 700; }
+    .pb-step .arrow { color: var(--primary); margin: 0 2px; }
+
+    .pb-level-badge {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 1px 6px;
+        border-radius: 4px;
+        margin-left: 4px;
+        vertical-align: middle;
+    }
+    .badge-mudah  { background: rgba(34,197,94,0.15);  color: #4ade80; }
+    .badge-sedang { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .badge-expert { background: rgba(220,20,48,0.18);  color: #f87171; }
+
+    @media (max-width: 640px) {
+        .pb-table-header,
+        .pb-row {
+            grid-template-columns: 28px 1fr 60px 60px;
+            font-size: var(--text-xs);
+        }
+        /* Hide step column on mobile, show as sub-row */
+        .pb-table-header .pb-step-col,
+        .pb-row .pb-step { display: none; }
+    }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <!-- ═══ DASHBOARD ═══ -->
+    <div id="view-dashboard" class="fade-in" style="display:flex; flex-direction:column; height:100%;">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">CAT <span>Pecahan</span></h1>
+            <p class="dashboard-subtitle">Drill Penyederhanaan &mdash; Persiapan IPDN</p>
+        </div>
+
+        <!-- Package Grid -->
+        <div style="flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:var(--space-4);">
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(155px, 1fr)); gap:var(--space-3); max-width:800px; margin:0 auto;" id="package-grid">
+                <!-- Rendered by JS -->
+            </div>
+
+            <!-- Info Box -->
+            <div class="info-box">
+                <p class="info-box-title">Aturan Drill:</p>
+                <ul>
+                    <li>Setiap paket berisi <strong>100 soal</strong> pecahan campuran</li>
+                    <li>Sederhanakan ke bentuk <strong>paling sederhana</strong> (STRICT)</li>
+                    <li>Level: <strong>30 Mudah + 35 Sedang + 35 Expert</strong></li>
+                    <li>Dual numpad: Pembilang &amp; Penyebut</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ TEST VIEW ═══ -->
+    <div id="view-test" style="display:none; flex-direction:column; height:100%;">
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="stat-current">0</div>
+                <div class="stat-label">Soal</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value mono" id="stat-timer">00:00</div>
+                <div class="stat-label">Waktu</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="stat-correct" style="color:var(--success);">0</div>
+                <div class="stat-label">Benar</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="stat-wrong" style="color:var(--error);">0</div>
+                <div class="stat-label">Salah</div>
+            </div>
+        </div>
+
+        <!-- Question Card -->
+        <!-- Outer: scrollable. Inner: flex-center so card is centered when space allows,
+             but scrollable when card overflows (fixes the flex justify-center overflow bug) -->
+        <div style="flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;">
+        <div style="min-height:100%; display:flex; align-items:center; justify-content:center; padding:0.75rem; box-sizing:border-box;">
+            <div class="question-card fade-in">
+                <div class="question-label">
+                    <span>Sederhanakan Pecahan Ini</span>
+                </div>
+
+                <!-- Original Fraction -->
+                <div class="fraction-display">
+                    <div class="fraction-num" id="question-numerator">12</div>
+                    <div class="fraction-slash">/</div>
+                    <div class="fraction-num" id="question-denominator">16</div>
+                </div>
+
+                <div class="arrow-down">↓</div>
+
+                <!-- Answer Boxes -->
+                <div class="answer-display">
+                    <div class="answer-box active" id="answer-numerator">?</div>
+                    <div class="answer-separator">/</div>
+                    <div class="answer-box" id="answer-denominator">?</div>
+                </div>
+
+                <!-- Dual Numpad -->
+                <div class="dual-numpad-container">
+                    <!-- Numpad Pembilang -->
+                    <div class="numpad-section">
+                        <div class="numpad-label">Pembilang</div>
+                        <div class="numpad-grid">
+                            <button class="numpad-btn" data-target="numerator" data-val="1">1</button>
+                            <button class="numpad-btn" data-target="numerator" data-val="2">2</button>
+                            <button class="numpad-btn" data-target="numerator" data-val="3">3</button>
+                            <button class="numpad-btn" data-target="numerator" data-val="4">4</button>
+                            <button class="numpad-btn" data-target="numerator" data-val="5">5</button>
+                            <button class="numpad-btn" data-target="numerator" data-val="6">6</button>
+                            <button class="numpad-btn" data-target="numerator" data-val="7">7</button>
+                            <button class="numpad-btn" data-target="numerator" data-val="8">8</button>
+                            <button class="numpad-btn" data-target="numerator" data-val="9">9</button>
+                            <button class="numpad-btn del" data-target="numerator" data-val="del">⌫</button>
+                            <button class="numpad-btn" data-target="numerator" data-val="0">0</button>
+                            <button class="numpad-btn" style="opacity:0; pointer-events:none;"></button>
+                        </div>
+                    </div>
+
+                    <!-- Numpad Penyebut -->
+                    <div class="numpad-section">
+                        <div class="numpad-label">Penyebut</div>
+                        <div class="numpad-grid">
+                            <button class="numpad-btn" data-target="denominator" data-val="1">1</button>
+                            <button class="numpad-btn" data-target="denominator" data-val="2">2</button>
+                            <button class="numpad-btn" data-target="denominator" data-val="3">3</button>
+                            <button class="numpad-btn" data-target="denominator" data-val="4">4</button>
+                            <button class="numpad-btn" data-target="denominator" data-val="5">5</button>
+                            <button class="numpad-btn" data-target="denominator" data-val="6">6</button>
+                            <button class="numpad-btn" data-target="denominator" data-val="7">7</button>
+                            <button class="numpad-btn" data-target="denominator" data-val="8">8</button>
+                            <button class="numpad-btn" data-target="denominator" data-val="9">9</button>
+                            <button class="numpad-btn del" data-target="denominator" data-val="del">⌫</button>
+                            <button class="numpad-btn" data-target="denominator" data-val="0">0</button>
+                            <button class="numpad-btn" style="opacity:0; pointer-events:none;"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <!-- Cancel Button -->
+        <div style="padding:0.5rem 1rem; text-align:center; background:var(--bg-surface); border-top:1px solid var(--border); flex-shrink:0;">
+            <button class="btn-secondary" onclick="cancelTest()" style="min-height:40px; font-size:var(--text-sm); padding:0.5rem 1.5rem;">
+                ✕ Akhiri Drill
+            </button>
+        </div>
+    </div>
+
+    <!-- ═══ REVIEW VIEW ═══ -->
+    <div id="view-review" class="review-view-bg" style="display:none; flex-direction:column; height:100%; overflow-y:auto;">
+        <div style="padding:2rem;">
+            <div style="text-align:center; margin-bottom:2rem;">
+                <h2 style="font-size:2rem; font-weight:900; color:var(--text-primary); letter-spacing:-0.01em;">Hasil <span style="color:var(--primary);">Drill</span></h2>
+                <p style="color:var(--text-muted); margin-top:4px; font-size:var(--text-sm);" id="review-time">Waktu: 00:00</p>
+            </div>
+
+            <!-- Tier Banner -->
+            <div id="tier-banner-container"></div>
+
+            <!-- Stats -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:1rem; margin-bottom:2rem;">
+                <div class="review-stat-card">
+                    <div class="stat-value" id="review-total">0</div>
+                    <div class="stat-label">Total Soal</div>
+                </div>
+                <div class="review-stat-card">
+                    <div class="stat-value" id="review-accuracy" style="color:var(--success);">0%</div>
+                    <div class="stat-label">Akurasi</div>
+                </div>
+                <div class="review-stat-card">
+                    <div class="stat-value mono" id="review-timer">00:00</div>
+                    <div class="stat-label">Waktu</div>
+                </div>
+            </div>
+
+            <!-- Wrong Answers -->
+            <div id="wrong-answers-container"></div>
+
+            <!-- Pembahasan -->
+            <div id="pembahasan-container"></div>
+
+            <!-- Buttons -->
+            <div style="display:flex; gap:1rem; justify-content:center; margin-top:2rem; flex-wrap:wrap;">
+                <button class="btn-secondary" onclick="backToDashboard()">
+                    ← Dashboard
+                </button>
+                <button class="btn-primary" id="btn-retry" onclick="retryPackage()">
+                    ↺ Ulangi Paket
+                </button>
+                <button class="btn-primary" id="btn-next-pkg" onclick="nextPackage()" style="background:linear-gradient(135deg, var(--primary-dark), var(--primary)); box-shadow:0 4px 14px rgba(220,20,48,0.4);">
+                    Paket Selanjutnya →
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ═══ CONSTANTS ═══
+const TOTAL_PACKAGES = 20;
+const QUESTIONS_PER_PACKAGE = 100;
+const MIX = { mudah: 30, sedang: 35, expert: 35 };
+
+// ═══ STATE ═══
+const state = {
+    isTestActive: false,
+    currentPackageIndex: 0,
+    currentQuestion: 0,
+    answers: [],
+    startTime: 0,
+    sessionTime: 0,
+    timerInterval: null,
+    userNumerator: '',
+    userDenominator: '',
+    questions: [],
+    packages: []
+};
+
+for (let i = 0; i < TOTAL_PACKAGES; i++) {
+    state.packages.push({ completed: false, score: null, time: null, tier: null });
+}
+
+// ═══ FRACTION GENERATOR ENGINE ═══
+const baseFractions = [
+    [1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],
+    [2,3],[2,5],[2,7],[2,9],
+    [3,4],[3,5],[3,7],[3,8],[3,10],
+    [4,5],[4,7],[4,9],
+    [5,6],[5,7],[5,8],[5,9],
+    [6,7],[7,8],[7,9],[7,10],[7,11],[7,12],
+    [8,9],[8,11],[9,10],[9,11],
+    [5,11],[5,12],[5,13],
+    [3,11],[3,13],[4,11],[4,13],
+    [6,11],[6,13],[7,13],
+    [8,13],[9,13],[10,11],[10,13],
+    [11,12],[11,13],[12,13],
+    [1,11],[1,12],[1,13],[2,11],[2,13]
+];
+
+function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+
+function generateQuestions(packageIdx) {
+    const seed = packageIdx * 7919 + 1;
+    let rng = seed;
+    function random() {
+        rng = (rng * 1664525 + 1013904223) % 4294967296;
+        return rng / 4294967296;
+    }
+    function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    const questions = [];
+    const usedKeys = new Set();
+
+    function makeQuestion(level) {
+        const maxAttempts = 200;
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            const [sn, sd] = baseFractions[Math.floor(random() * baseFractions.length)];
+            let multiplier;
+
+            if (level === 'Mudah') {
+                multiplier = Math.floor(random() * 4) + 2;
+            } else if (level === 'Sedang') {
+                multiplier = Math.floor(random() * 6) + 4;
+            } else {
+                multiplier = Math.floor(random() * 8) + 6;
+            }
+
+            const num = sn * multiplier;
+            const den = sd * multiplier;
+
+            if (num > 999 || den > 999) continue;
+            if (num === den) continue;
+            if (num < 2 || den < 2) continue;
+
+            if (level === 'Mudah'  && (num > 30 || den > 30)) continue;
+            if (level === 'Sedang' && (num <= 10 || den <= 10 || num > 80 || den > 80)) continue;
+            if (level === 'Expert' && (num <= 30 || den <= 30)) continue;
+
+            const key = `${num}/${den}`;
+            if (usedKeys.has(key)) continue;
+            usedKeys.add(key);
+
+            const g = gcd(num, den);
+            const ansNum = num / g;
+            const ansDen = den / g;
+            if (g === 1) continue;
+
+            return {
+                numerator: num,
+                denominator: den,
+                answerNumerator: ansNum,
+                answerDenominator: ansDen,
+                level: level
+            };
+        }
+        return null;
+    }
+
+    const levels = [
+        { name: 'Mudah',  count: MIX.mudah },
+        { name: 'Sedang', count: MIX.sedang },
+        { name: 'Expert', count: MIX.expert }
+    ];
+
+    for (const lv of levels) {
+        for (let i = 0; i < lv.count; i++) {
+            const q = makeQuestion(lv.name);
+            if (q) questions.push(q);
+        }
+    }
+
+    while (questions.length < QUESTIONS_PER_PACKAGE) {
+        const fallback = makeQuestion('Sedang') || makeQuestion('Mudah');
+        if (fallback) questions.push(fallback);
+        else break;
+    }
+
+    return shuffle(questions);
+}
+
+// ═══ UTILS ═══
+function formatTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
+
+function switchView(view) {
+    document.getElementById('view-dashboard').style.display = 'none';
+    document.getElementById('view-test').style.display = 'none';
+    document.getElementById('view-review').style.display = 'none';
+    if (view === 'dashboard') {
+        document.getElementById('view-dashboard').style.display = 'flex';
+    } else if (view === 'test') {
+        document.getElementById('view-test').style.display = 'flex';
+    } else if (view === 'review') {
+        document.getElementById('view-review').style.display = 'flex';
+    }
+}
+
+// ═══ DASHBOARD RENDERING ═══
+function renderDashboard() {
+    const grid = document.getElementById('package-grid');
+    grid.innerHTML = '';
+
+    for (let i = 0; i < TOTAL_PACKAGES; i++) {
+        const pkg = state.packages[i];
+        const card = document.createElement('div');
+
+        let completedClass = pkg.completed ? 'completed' : '';
+        let scoreHTML = '';
+        let tierHTML = '';
+
+        if (pkg.completed) {
+            scoreHTML = `<div class="pkg-score">${pkg.score}% &middot; ${formatTime(pkg.time)}</div>`;
+            if (pkg.tier) {
+                tierHTML = `<div class="pkg-tier-badge" style="background:${pkg.tier.bg}; color:${pkg.tier.text};">
+                    ${pkg.tier.rank}
+                </div>`;
+            }
+        }
+
+        card.innerHTML = `
+            <div class="pkg-card ${completedClass}" onclick="startTest(${i})">
+                <div class="pkg-number mono">${String(i + 1).padStart(2, '0')}</div>
+                <div class="pkg-label">Paket ${i + 1}</div>
+                <div class="pkg-count">100 soal</div>
+                ${scoreHTML}
+                ${tierHTML}
+            </div>`;
+
+        grid.appendChild(card);
+    }
+}
+
+// ═══ TIMER ═══
+function startTimer() {
+    state.startTime = Date.now();
+    state.timerInterval = setInterval(() => {
+        state.sessionTime = Math.floor((Date.now() - state.startTime) / 1000);
+        document.getElementById('stat-timer').textContent = formatTime(state.sessionTime);
+    }, 1000);
+}
+
+function stopTimer() {
+    if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+    }
+}
+
+// ═══ TEST FLOW ═══
+function startTest(packageIdx) {
+    state.currentPackageIndex = packageIdx;
+    state.questions = generateQuestions(packageIdx);
+    state.isTestActive = true;
+    state.currentQuestion = 0;
+    state.answers = [];
+    state.sessionTime = 0;
+
+    switchView('test');
+    startTimer();
+    loadQuestion();
+}
+
+function loadQuestion() {
+    if (state.currentQuestion >= state.questions.length) {
+        finishTest();
+        return;
+    }
+    const q = state.questions[state.currentQuestion];
+    document.getElementById('question-numerator').textContent = q.numerator;
+    document.getElementById('question-denominator').textContent = q.denominator;
+    state.userNumerator = '';
+    state.userDenominator = '';
+    document.getElementById('answer-numerator').textContent = '?';
+    document.getElementById('answer-denominator').textContent = '?';
+    document.getElementById('answer-numerator').classList.remove('error');
+    document.getElementById('answer-denominator').classList.remove('error');
+    updateStats();
+}
+
+function updateStats() {
+    document.getElementById('stat-current').textContent = `${state.currentQuestion + 1}/${state.questions.length}`;
+    const correct = state.answers.filter(a => a.isCorrect).length;
+    const wrong = state.answers.filter(a => !a.isCorrect).length;
+    document.getElementById('stat-correct').textContent = correct;
+    document.getElementById('stat-wrong').textContent = wrong;
+}
+
+// ═══ INPUT HANDLING ═══
+function processInput(target, value) {
+    if (!state.isTestActive) return;
+
+    if (value === 'del') {
+        if (target === 'numerator') { state.userNumerator = ''; }
+        else { state.userDenominator = ''; }
+    } else {
+        if (target === 'numerator') {
+            if (state.userNumerator.length < 3) state.userNumerator += value;
+        } else {
+            if (state.userDenominator.length < 3) state.userDenominator += value;
+        }
+    }
+
+    document.getElementById('answer-numerator').textContent = state.userNumerator || '?';
+    document.getElementById('answer-denominator').textContent = state.userDenominator || '?';
+
+    if (state.userNumerator && state.userDenominator) {
+        checkAnswer();
+    }
+}
+
+function checkAnswer() {
+    const q = state.questions[state.currentQuestion];
+    const userNum = parseInt(state.userNumerator);
+    const userDen = parseInt(state.userDenominator);
+    const isCorrect = (userNum === q.answerNumerator && userDen === q.answerDenominator);
+
+    state.answers.push({
+        questionNumerator: q.numerator,
+        questionDenominator: q.denominator,
+        userNumerator: userNum,
+        userDenominator: userDen,
+        correctNumerator: q.answerNumerator,
+        correctDenominator: q.answerDenominator,
+        isCorrect: isCorrect,
+        level: q.level
+    });
+
+    if (isCorrect) {
+        playCorrectSound();
+        setTimeout(() => { state.currentQuestion++; loadQuestion(); }, 250);
+    } else {
+        playWrongSound();
+        document.getElementById('answer-numerator').classList.add('error');
+        document.getElementById('answer-denominator').classList.add('error');
+        try { navigator.vibrate && navigator.vibrate([80, 30, 80]); } catch(e) {}
+        setTimeout(() => { state.currentQuestion++; loadQuestion(); }, 700);
+    }
+}
+
+// ═══ AUDIO ═══
+function playCorrectSound() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 800; gain.gain.value = 0.1;
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.1);
+    } catch(e) {}
+}
+
+function playWrongSound() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sawtooth'; osc.frequency.value = 150; gain.gain.value = 0.15;
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.15);
+    } catch(e) {}
+}
+
+// ═══ TIER SYSTEM ═══
+function getTier(time, score) {
+    if (time <= 360  && score > 99) return { rank:'S+', label:'Dewa Pecahan',       emoji:'🧬', bg:'#3b0764', text:'#e9d5ff' };
+    if (time <= 480  && score >= 90) return { rank:'S',  label:'Master Pecahan',     emoji:'⚡', bg:'#78350f', text:'#fef3c7' };
+    if (time <= 600  && score >= 80) return { rank:'A',  label:'Ahli Pecahan',       emoji:'🔥', bg:'#1e3a8a', text:'#dbeafe' };
+    if (time <= 900  && score >= 70) return { rank:'B',  label:'Kompeten',           emoji:'💪', bg:'#064e3b', text:'#d1fae5' };
+    if (time <= 1200 && score >= 55) return { rank:'C',  label:'Perlu Latihan Lagi', emoji:'🤔', bg:'#1e1b4b', text:'#e0e7ff' };
+    return                                   { rank:'D',  label:'Masih Belajar',      emoji:'🐌', bg:'#1c1917', text:'#d6d3d1' };
+}
+
+const tierDesc = {
+    'S+': 'Otakmu kalkulator pecahan ya? Luar biasa!',
+    'S' : 'Kamu menguasai pecahan dengan sempurna!',
+    'A' : 'Skill pecahan kamu kuat banget!',
+    'B' : 'Bagus! Terus tingkatkan lagi.',
+    'C' : 'Keep practicing, kamu pasti bisa!',
+    'D' : 'Jangan menyerah, latihan terus ya!'
+};
+
+// ═══ FINISH & REVIEW ═══
+function finishTest() {
+    stopTimer();
+    state.isTestActive = false;
+
+    const correct = state.answers.filter(a => a.isCorrect).length;
+    const total = state.answers.length;
+    const score = total > 0 ? Math.round((correct / total) * 100) : 0;
+    const tier = getTier(state.sessionTime, score);
+
+    const pkg = state.packages[state.currentPackageIndex];
+    pkg.completed = true;
+    pkg.score = score;
+    pkg.time = state.sessionTime;
+    pkg.tier = tier;
+
+    document.getElementById('review-time').textContent = `Paket ${state.currentPackageIndex + 1} · ${formatTime(state.sessionTime)}`;
+    document.getElementById('review-total').textContent = total;
+    document.getElementById('review-accuracy').textContent = `${score}%`;
+    document.getElementById('review-accuracy').style.color = score >= 80 ? 'var(--success)' : score >= 60 ? 'var(--warning)' : 'var(--error)';
+    document.getElementById('review-timer').textContent = formatTime(state.sessionTime);
+
+    document.getElementById('tier-banner-container').innerHTML = `
+        <div class="tier-banner" style="background:${tier.bg}; color:${tier.text};">
+            <div style="font-size:2.75rem; flex-shrink:0;">${tier.emoji}</div>
+            <div style="flex:1; min-width:0;">
+                <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem; flex-wrap:wrap;">
+                    <span class="tier-rank">${tier.rank}</span>
+                    <span style="font-size:var(--text-sm); font-weight:800; letter-spacing:0.06em; opacity:0.9;">${tier.label.toUpperCase()}</span>
+                </div>
+                <p style="font-size:var(--text-sm); opacity:0.8; margin:0; line-height:var(--leading-normal);">${tierDesc[tier.rank]}</p>
+            </div>
+        </div>`;
+
+    const wrongAnswers = state.answers.filter(a => !a.isCorrect);
+    const container = document.getElementById('wrong-answers-container');
+
+    if (wrongAnswers.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center; padding:var(--space-12); background:var(--bg-surface); border-radius:var(--radius-xl); border:1.5px solid rgba(34,197,94,0.2);">
+                <div style="font-size:3.5rem; margin-bottom:var(--space-4);">✨</div>
+                <h3 style="font-size:var(--text-xl); font-weight:800; color:var(--success); margin-bottom:var(--space-2);">Sempurna!</h3>
+                <p style="color:var(--text-muted);">Semua jawaban benar — akurasi 100%!</p>
+            </div>`;
+    } else {
+        let html = `<h3 style="font-size:var(--text-lg); font-weight:800; color:var(--text-primary); margin-bottom:var(--space-4);">
+            <span style="color:var(--error);">${wrongAnswers.length}</span> Kesalahan Ditemukan
+        </h3>`;
+        wrongAnswers.forEach(ans => {
+            html += `
+                <div class="review-item">
+                    <div class="review-fraction">
+                        <div class="review-frac-display">
+                            <div class="review-num">${ans.questionNumerator}</div>
+                            <div class="review-slash">/</div>
+                            <div class="review-num">${ans.questionDenominator}</div>
+                        </div>
+                        <div style="font-size:var(--text-lg); color:var(--primary); opacity:0.6;">→</div>
+                        <div style="font-size:var(--text-sm); line-height:var(--leading-relaxed);">
+                            <div style="color:var(--text-secondary); margin-bottom:2px;">Kunci: <span style="font-weight:800; color:var(--success); font-family:'JetBrains Mono',monospace;">${ans.correctNumerator}/${ans.correctDenominator}</span></div>
+                            <div style="color:var(--text-secondary);">Input: <span style="font-weight:800; color:var(--error); font-family:'JetBrains Mono',monospace;">${ans.userNumerator}/${ans.userDenominator}</span></div>
+                        </div>
+                    </div>
+                    <div style="width:32px; height:32px; background:rgba(220,20,48,0.15); color:var(--error); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; flex-shrink:0; border:1px solid rgba(220,20,48,0.3);">✕</div>
+                </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    const nextBtn = document.getElementById('btn-next-pkg');
+    if (state.currentPackageIndex + 1 < TOTAL_PACKAGES) {
+        nextBtn.style.display = 'inline-flex';
+    } else {
+        nextBtn.style.display = 'none';
+    }
+
+    renderPembahasan(state.answers, []);
+    switchView('review');
+}
+
+// ═══ PEMBAHASAN ═══
+function buildStep(num, den) {
+    const g = gcd(num, den);
+    const ansN = num / g, ansD = den / g;
+    const correctStr = `${ansN}/${ansD}`;
+    return {
+        g, correctStr,
+        html: `FPB(<span class="fpb">${num}</span>,<span class="fpb">${den}</span>) = <span class="fpb">${g}</span><span class="arrow">→</span>${num}÷${g} / ${den}÷${g} = <span class="result">${correctStr}</span>`
+    };
+}
+
+function levelBadge(level) {
+    const cls = level === 'Mudah' ? 'badge-mudah' : level === 'Sedang' ? 'badge-sedang' : 'badge-expert';
+    return `<span class="pb-level-badge ${cls}">${level[0]}</span>`;
+}
+
+function buildAnsweredItem(ans, displayIdx) {
+    const { html: stepHtml, correctStr } = buildStep(ans.questionNumerator, ans.questionDenominator);
+    const userStr = `${ans.userNumerator}/${ans.userDenominator}`;
+    const userChip = ans.isCorrect
+        ? `<span class="pb-answer-chip right">✓ ${userStr}</span>`
+        : `<span class="pb-answer-chip wrong">✗ ${userStr}</span>`;
+    const keyChip = ans.isCorrect
+        ? ''
+        : `<span class="pb-answer-chip key">Kunci: ${correctStr}</span>`;
+    return `
+    <div class="pb-item">
+        <div class="pb-item-num">${displayIdx}</div>
+        <div class="pb-item-frac">
+            <span class="pb-frac-num">${ans.questionNumerator}</span>
+            <span class="pb-frac-slash">/</span>
+            <span class="pb-frac-num">${ans.questionDenominator}</span>
+            ${levelBadge(ans.level)}
+        </div>
+        <div class="pb-item-detail">
+            <div class="pb-item-answers">${userChip}${keyChip}</div>
+            <div class="pb-step-line">${stepHtml}</div>
+        </div>
+    </div>`;
+}
+
+function buildUnansweredItem(q, displayIdx) {
+    const { html: stepHtml, correctStr } = buildStep(q.numerator, q.denominator);
+    return `
+    <div class="pb-item">
+        <div class="pb-item-num">${displayIdx}</div>
+        <div class="pb-item-frac">
+            <span class="pb-frac-num">${q.numerator}</span>
+            <span class="pb-frac-slash">/</span>
+            <span class="pb-frac-num">${q.denominator}</span>
+            ${levelBadge(q.level)}
+        </div>
+        <div class="pb-item-detail">
+            <div class="pb-item-answers">
+                <span class="pb-answer-chip unanswered">— tidak dijawab</span>
+                <span class="pb-answer-chip key">Kunci: ${correctStr}</span>
+            </div>
+            <div class="pb-step-line">${stepHtml}</div>
+        </div>
+    </div>`;
+}
+
+function buildAccordion(id, btnClass, icon, title, count, items, autoOpen) {
+    const openClass = autoOpen ? 'open' : '';
+    const emptyHTML = count === 0 ? `<div class="pb-empty">Tidak ada soal di kategori ini.</div>` : items;
+    return `
+    <button class="pb-acc-btn ${btnClass} ${openClass}" onclick="toggleAccordion('${id}')">
+        <span class="pb-acc-left">
+            <span class="pb-acc-icon">${icon}</span>
+            <span class="pb-acc-title">${title}</span>
+            <span class="pb-acc-count">(${count} soal)</span>
+        </span>
+        <span class="pb-acc-chevron">▼</span>
+    </button>
+    <div class="pb-acc-body ${openClass}" id="${id}">${emptyHTML}</div>`;
+}
+
+function renderPembahasan(answers, unanswered) {
+    const container = document.getElementById('pembahasan-container');
+
+    const wrong   = answers.filter(a => !a.isCorrect);
+    const correct = answers.filter(a =>  a.isCorrect);
+
+    // Build items per section
+    let wrongItems = '', correctItems = '', belumItems = '';
+    let wIdx = 1, cIdx = 1, bIdx = 1;
+
+    wrong.forEach(a   => { wrongItems   += buildAnsweredItem(a, wIdx++); });
+    correct.forEach(a => { correctItems += buildAnsweredItem(a, cIdx++); });
+    unanswered.forEach(q => { belumItems += buildUnansweredItem(q, bIdx++); });
+
+    container.innerHTML = `
+    <div style="margin-top:var(--space-4); margin-bottom:var(--space-2);">
+        <p style="font-size:var(--text-sm); font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.08em;">📖 Pembahasan</p>
+    </div>
+    <div class="pb-section-wrap">
+        ${buildAccordion('pb-salah',  'salah',  '❌', 'Soal Salah',          wrong.length,     wrongItems,   wrong.length > 0)}
+        ${buildAccordion('pb-belum',  'belum',  '⬜', 'Tidak Terjawab',      unanswered.length, belumItems,  unanswered.length > 0)}
+        ${buildAccordion('pb-benar',  'benar',  '✅', 'Soal Benar',          correct.length,   correctItems, false)}
+    </div>`;
+}
+
+function toggleAccordion(id) {
+    const body = document.getElementById(id);
+    const btn  = body.previousElementSibling;
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open');
+    btn.classList.toggle('open');
+    if (!isOpen) {
+        setTimeout(() => btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    }
+}
+
+function cancelTest() {
+    if (confirm('Akhiri drill ini?')) {
+        stopTimer();
+        state.isTestActive = false;
+
+        // Collect unanswered questions (not yet reached)
+        const unanswered = state.questions.slice(state.currentQuestion);
+
+        // Build partial review
+        const correct = state.answers.filter(a => a.isCorrect).length;
+        const total   = state.answers.length;
+        const score   = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+        document.getElementById('review-time').textContent =
+            `Paket ${state.currentPackageIndex + 1} · ${formatTime(state.sessionTime)} (dihentikan)`;
+        document.getElementById('review-total').textContent     = total;
+        document.getElementById('review-accuracy').textContent  = `${score}%`;
+        document.getElementById('review-accuracy').style.color  =
+            score >= 80 ? 'var(--success)' : score >= 60 ? 'var(--warning)' : 'var(--error)';
+        document.getElementById('review-timer').textContent     = formatTime(state.sessionTime);
+
+        // No tier for cancelled session
+        document.getElementById('tier-banner-container').innerHTML = `
+            <div style="background:var(--bg-surface); border:1.5px solid var(--border); border-radius:var(--radius-lg); padding:var(--space-4) var(--space-5); margin-bottom:var(--space-6); display:flex; align-items:center; gap:var(--space-3);">
+                <span style="font-size:1.5rem;">⏹</span>
+                <div>
+                    <p style="font-weight:700; color:var(--text-primary); font-size:var(--text-sm);">Drill Dihentikan</p>
+                    <p style="color:var(--text-muted); font-size:var(--text-xs); margin-top:2px;">
+                        ${total} soal dijawab · ${unanswered.length} soal tidak terjawab
+                    </p>
+                </div>
+            </div>`;
+
+        // Wrong answers summary
+        const wrongAnswers = state.answers.filter(a => !a.isCorrect);
+        const container = document.getElementById('wrong-answers-container');
+        if (wrongAnswers.length === 0 && total > 0) {
+            container.innerHTML = `<div style="text-align:center; padding:var(--space-6); color:var(--success); font-weight:700;">✓ Semua yang dijawab benar!</div>`;
+        } else {
+            let html = wrongAnswers.length > 0
+                ? `<p style="font-size:var(--text-sm); font-weight:700; color:var(--text-primary); margin-bottom:var(--space-3);">
+                       <span style="color:var(--error);">${wrongAnswers.length}</span> Kesalahan
+                   </p>` : '';
+            wrongAnswers.forEach(ans => {
+                html += `
+                <div class="review-item">
+                    <div class="review-fraction">
+                        <div class="review-frac-display">
+                            <div class="review-num">${ans.questionNumerator}</div>
+                            <div class="review-slash">/</div>
+                            <div class="review-num">${ans.questionDenominator}</div>
+                        </div>
+                        <div style="font-size:var(--text-lg); color:var(--primary); opacity:0.6;">→</div>
+                        <div style="font-size:var(--text-sm); line-height:var(--leading-relaxed);">
+                            <div style="color:var(--text-secondary); margin-bottom:2px;">Kunci: <span style="font-weight:800; color:var(--success); font-family:'JetBrains Mono',monospace;">${ans.correctNumerator}/${ans.correctDenominator}</span></div>
+                            <div style="color:var(--text-secondary);">Input: <span style="font-weight:800; color:var(--error); font-family:'JetBrains Mono',monospace;">${ans.userNumerator}/${ans.userDenominator}</span></div>
+                        </div>
+                    </div>
+                    <div style="width:32px; height:32px; background:rgba(220,20,48,0.15); color:var(--error); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; flex-shrink:0; border:1px solid rgba(220,20,48,0.3);">✕</div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // Hide "next package" when cancelled
+        document.getElementById('btn-next-pkg').style.display = 'none';
+
+        renderPembahasan(state.answers, unanswered);
+        switchView('review');
+    }
+}
+
+function backToDashboard() {
+    renderDashboard();
+    switchView('dashboard');
+}
+
+function retryPackage() {
+    startTest(state.currentPackageIndex);
+}
+
+function nextPackage() {
+    const next = state.currentPackageIndex + 1;
+    if (next < TOTAL_PACKAGES) {
+        startTest(next);
+    }
+}
+
+// ═══ NUMPAD LISTENERS ═══
+document.querySelectorAll('.numpad-btn').forEach(btn => {
+    let touchFired = false;
+
+    btn.addEventListener('touchstart', e => {
+        e.preventDefault();
+        touchFired = true;
+        btn.classList.add('pressed');
+        const target = btn.getAttribute('data-target');
+        const value = btn.getAttribute('data-val');
+        if (target && value) processInput(target, value);
+    }, { passive: false });
+
+    btn.addEventListener('touchend', () => {
+        btn.classList.remove('pressed');
+        setTimeout(() => { touchFired = false; }, 300);
+    }, { passive: true });
+
+    btn.addEventListener('click', () => {
+        if (!touchFired) {
+            const target = btn.getAttribute('data-target');
+            const value = btn.getAttribute('data-val');
+            if (target && value) processInput(target, value);
+        }
+    });
+});
+
+// ═══ INIT ═══
+renderDashboard();
+switchView('dashboard');
+</script>
+
+</body>
+</html>
