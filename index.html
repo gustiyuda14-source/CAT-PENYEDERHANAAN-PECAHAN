@@ -1235,7 +1235,8 @@ const state = {
     userNumerator: '',
     userDenominator: '',
     questions: [],
-    packages: []
+    packages: [],
+    answerCheckTimer: null
 };
 
 for (let i = 0; i < TOTAL_PACKAGES; i++) {
@@ -1433,6 +1434,10 @@ function startTest(packageIdx) {
 }
 
 function loadQuestion() {
+    if (state.answerCheckTimer) {
+        clearTimeout(state.answerCheckTimer);
+        state.answerCheckTimer = null;
+    }
     if (state.currentQuestion >= state.questions.length) {
         finishTest();
         return;
@@ -1475,8 +1480,27 @@ function processInput(target, value) {
     document.getElementById('answer-numerator').textContent = state.userNumerator || '?';
     document.getElementById('answer-denominator').textContent = state.userDenominator || '?';
 
+    if (state.answerCheckTimer) {
+        clearTimeout(state.answerCheckTimer);
+        state.answerCheckTimer = null;
+    }
+
     if (state.userNumerator && state.userDenominator) {
-        checkAnswer();
+        const q = state.questions[state.currentQuestion];
+        const userNum = parseInt(state.userNumerator);
+        const userDen = parseInt(state.userDenominator);
+        const matches = (userNum === q.answerNumerator && userDen === q.answerDenominator);
+
+        if (matches) {
+            checkAnswer();
+        } else {
+            state.answerCheckTimer = setTimeout(() => {
+                state.answerCheckTimer = null;
+                if (state.isTestActive && state.userNumerator && state.userDenominator) {
+                    checkAnswer();
+                }
+            }, 5000);
+        }
     }
 }
 
