@@ -1292,29 +1292,32 @@ function generateQuestions(packageIdx) {
     const usedKeys = new Set();
 
     function makeQuestion(level) {
-        const maxAttempts = 200;
+        const maxAttempts = 300;
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
             const [sn, sd] = baseFractions[Math.floor(random() * baseFractions.length)];
             let multiplier;
 
             if (level === 'Mudah') {
-                multiplier = Math.floor(random() * 4) + 2;
+                // Multiplier kecil, hasil 1 digit atau maks belasan
+                multiplier = Math.floor(random() * 3) + 2; // 2–4
             } else if (level === 'Sedang') {
-                multiplier = Math.floor(random() * 6) + 4;
+                // Dua digit, GCD masih bisa dilihat
+                multiplier = Math.floor(random() * 7) + 3; // 3–9
             } else {
-                multiplier = Math.floor(random() * 8) + 6;
+                // Multiplier besar → GCD tidak obvious, tapi angka ≤ 120
+                multiplier = Math.floor(random() * 26) + 5; // 5–30
             }
 
             const num = sn * multiplier;
             const den = sd * multiplier;
 
-            if (num > 999 || den > 999) continue;
             if (num === den) continue;
             if (num < 2 || den < 2) continue;
 
-            if (level === 'Mudah'  && (num > 30 || den > 30)) continue;
-            if (level === 'Sedang' && (num <= 10 || den <= 10 || num > 80 || den > 80)) continue;
-            if (level === 'Expert' && (num <= 30 || den <= 30)) continue;
+            // Ambang per level
+            if (level === 'Mudah'  && (num > 20 || den > 20)) continue;
+            if (level === 'Sedang' && (num <= 10 || den <= 10 || num > 70 || den > 70)) continue;
+            if (level === 'Expert' && (num <= 30 || den <= 30 || num > 120 || den > 120)) continue;
 
             const key = `${num}/${den}`;
             if (usedKeys.has(key)) continue;
