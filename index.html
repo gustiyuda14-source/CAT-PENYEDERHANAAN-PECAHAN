@@ -1224,6 +1224,20 @@ const QUESTIONS_PER_PACKAGE = 100;
 const MIX = { mudah: 30, sedang: 35, expert: 35 };
 
 // ═══ STATE ═══
+function loadPackagesFromStorage() {
+    try {
+        const saved = localStorage.getItem('cat_pecahan_packages');
+        if (saved) return JSON.parse(saved);
+    } catch(e) {}
+    const arr = [];
+    for (let i = 0; i < TOTAL_PACKAGES; i++) arr.push({ completed: false, score: null, time: null, tier: null });
+    return arr;
+}
+
+function savePackagesToStorage() {
+    try { localStorage.setItem('cat_pecahan_packages', JSON.stringify(state.packages)); } catch(e) {}
+}
+
 const state = {
     isTestActive: false,
     currentPackageIndex: 0,
@@ -1235,13 +1249,9 @@ const state = {
     userNumerator: '',
     userDenominator: '',
     questions: [],
-    packages: [],
+    packages: loadPackagesFromStorage(),
     answerCheckTimer: null
 };
-
-for (let i = 0; i < TOTAL_PACKAGES; i++) {
-    state.packages.push({ completed: false, score: null, time: null, tier: null });
-}
 
 // ═══ FRACTION GENERATOR ENGINE ═══
 const baseFractions = [
@@ -1451,6 +1461,9 @@ function loadQuestion() {
     document.getElementById('answer-denominator').textContent = '?';
     document.getElementById('answer-numerator').classList.remove('error');
     document.getElementById('answer-denominator').classList.remove('error');
+    // Reset active state to numerator for each new question
+    document.getElementById('answer-numerator').classList.add('active');
+    document.getElementById('answer-denominator').classList.remove('active');
     updateStats();
 }
 
@@ -1467,8 +1480,8 @@ function processInput(target, value) {
     if (!state.isTestActive) return;
 
     if (value === 'del') {
-        if (target === 'numerator') { state.userNumerator = ''; }
-        else { state.userDenominator = ''; }
+        if (target === 'numerator') { state.userNumerator = state.userNumerator.slice(0, -1); }
+        else { state.userDenominator = state.userDenominator.slice(0, -1); }
     } else {
         if (target === 'numerator') {
             if (state.userNumerator.length < 3) state.userNumerator += value;
@@ -1477,8 +1490,18 @@ function processInput(target, value) {
         }
     }
 
-    document.getElementById('answer-numerator').textContent = state.userNumerator || '?';
-    document.getElementById('answer-denominator').textContent = state.userDenominator || '?';
+    // Auto-switch active box: after numerator filled, highlight denominator
+    const numBox = document.getElementById('answer-numerator');
+    const denBox = document.getElementById('answer-denominator');
+    numBox.textContent = state.userNumerator || '?';
+    denBox.textContent = state.userDenominator || '?';
+    if (state.userNumerator && !state.userDenominator) {
+        numBox.classList.remove('active');
+        denBox.classList.add('active');
+    } else if (!state.userNumerator) {
+        numBox.classList.add('active');
+        denBox.classList.remove('active');
+    }
 
     if (state.answerCheckTimer) {
         clearTimeout(state.answerCheckTimer);
@@ -1499,7 +1522,7 @@ function processInput(target, value) {
                 if (state.isTestActive && state.userNumerator && state.userDenominator) {
                     checkAnswer();
                 }
-            }, 5000);
+            }, 1500);
         }
     }
 }
@@ -1592,6 +1615,7 @@ function finishTest() {
     pkg.score = score;
     pkg.time = state.sessionTime;
     pkg.tier = tier;
+    savePackagesToStorage();
 
     document.getElementById('review-time').textContent = `Paket ${state.currentPackageIndex + 1} · ${formatTime(state.sessionTime)}`;
     document.getElementById('review-total').textContent = total;
@@ -1775,7 +1799,7 @@ function cancelTest() {
         stopTimer();
         state.isTestActive = false;
 
-        // Collect unanswered questions (not yet reached)
+        // Collect unanswered: current active question + all remaining
         const unanswered = state.questions.slice(state.currentQuestion);
 
         // Build partial review
